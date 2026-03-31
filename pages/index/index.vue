@@ -1185,6 +1185,8 @@ export default {
                   
                   // 处理 \N 换行符
                   cleanText = cleanText.replace(/\\N/g, ' ').trim();
+                  // 清理广告内容和网址
+                  cleanText = this.cleanSubtitleText(cleanText);
                   // 清理乱码：移除类似 "m 0 0 1 0" 这样的乱码
                   cleanText = cleanText.replace(/\b[a-zA-Z]\s+[\d\s]+\b/g, '').trim();
                   // 清理多余的空格
@@ -1210,6 +1212,8 @@ export default {
           const blocks = content.split(/\n\s*\n/);
           console.log('SRT 格式字幕块数:', blocks.length);
                     
+          // 找到第一个有效字幕块的索引
+          let startBlockIndex = 0;
           for (let i = 0; i < blocks.length; i++) {
             const block = blocks[i];
             if (!block.trim()) continue;
@@ -1221,7 +1225,32 @@ export default {
             let timeLineIndex = 0;
             // 跳过序号行
             if (!isNaN(parseInt(lines[0]))) {
-                            timeLineIndex = 1;
+              timeLineIndex = 1;
+            }
+            
+            // 尝试匹配时间戳格式
+            const timeLine = lines[timeLineIndex];
+            const timeMatch = timeLine.match(/(\d+):(\d+):(\d+)[,.](\d+)\s*-->\s*(\d+):(\d+):(\d+)[,.](\d+)/);
+            
+            if (timeMatch) {
+              startBlockIndex = i;
+              break;
+            }
+          }
+                    
+          // 从第一个有效字幕块开始解析
+          for (let i = startBlockIndex; i < blocks.length; i++) {
+            const block = blocks[i];
+            if (!block.trim()) continue;
+            
+            const lines = block.split('\n').filter(line => line.trim());
+                        
+            if (lines.length < 2) continue;
+            
+            let timeLineIndex = 0;
+            // 跳过序号行
+            if (!isNaN(parseInt(lines[0]))) {
+              timeLineIndex = 1;
             }
             
             // 解析时间戳
@@ -1250,6 +1279,8 @@ export default {
               
               // 处理 \N 换行符
               text = text.replace(/\\N/g, ' ').trim();
+              // 清理广告内容和网址
+              text = this.cleanSubtitleText(text);
               // 清理乱码：移除类似 "m 0 0 1 0" 这样的乱码
               text = text.replace(/\b[a-zA-Z]\s+[\d\s]+\b/g, '').trim();
               // 清理多余的空格
@@ -1401,6 +1432,57 @@ export default {
       const m = Math.floor((seconds % 3600) / 60);
       const s = Math.floor(seconds % 60);
       return h.toString().padStart(2, '0') + ':' + m.toString().padStart(2, '0') + ':' + s.toString().padStart(2, '0');
+    },
+    
+    /**
+     * 清理字幕文本中的广告内容和网址
+     */
+    cleanSubtitleText(text) {
+      let cleanText = text;
+      
+      // 清理网址链接（http、https、www开头）
+      cleanText = cleanText.replace(/https?:\/\/[^\s]+/gi, '').trim();
+      cleanText = cleanText.replace(/www\.[^\s]+/gi, '').trim();
+      
+      // 广告关键词
+      const adKeywords = ['深影', 'ShinY', '字幕组', '论坛', '微博', '微信公众号', 'shinybbs', 'weibo.com'];
+      
+      // 使用广告关键词过滤
+      adKeywords.forEach(keyword => {
+        const regex = new RegExp(keyword, 'gi');
+        cleanText = cleanText.replace(regex, '').trim();
+      });
+      
+      // 清理常见的广告关键词模式
+      const adPatterns = [
+        /更多精彩.*论坛/g,
+        /字幕组.*微博/g,
+        /关注.*字幕组.*公众号/g,
+        /微信公众号.*影视资讯/g,
+        /论坛.*vip/g,
+        /更多资源.*访问/g,
+        /版权声明/g,
+        /制作.*字幕组/g,
+        /翻译.*校对/g,
+        /压制.*后期/g,
+        /海报.*设计/g,
+        /请登录/g,
+        /等你來发现/g
+      ];
+      
+      adPatterns.forEach(pattern => {
+        cleanText = cleanText.replace(pattern, '').trim();
+      });
+      
+      // 清理多余的标点符号和空格
+      cleanText = cleanText.replace(/[，。！？：；]/g, '').trim();
+      cleanText = cleanText.replace(/\s+/g, ' ').trim();
+      
+      // 清理纯装饰符号（如 ■ 、 ★ 、 ● 等）单独成行的内容
+      // 匹配仅包含装饰符号的行
+      cleanText = cleanText.replace(/^[\s■★●◆▲△▼▏▎▍▌▋▊▉█▇▆▅▄▃▂▁]+$/gm, '').trim();
+      
+      return cleanText;
     },
     
     /**

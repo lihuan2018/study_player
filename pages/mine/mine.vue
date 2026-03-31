@@ -75,7 +75,7 @@ export default {
      */
     getAppVersion() {
       // 直接使用manifest.json中的版本号
-      this.appVersion = '1.0.1';
+      this.appVersion = '1.0.2';
     },
     
     /**
