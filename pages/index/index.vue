@@ -1513,11 +1513,16 @@ export default {
         }
       }
       
-      // 只有当字幕索引发生变化时才更新并滚动
-      if (this.currentSubtitleIndex !== foundIndex) {
-        this.currentSubtitleIndex = foundIndex;
-        // 滚动字幕到当前位置
-        this.scrollToCurrentSubtitle();
+      // 只有当找到新的字幕时才更新
+      if (foundIndex !== -1) {
+        if (this.currentSubtitleIndex !== foundIndex) {
+          this.currentSubtitleIndex = foundIndex;
+          // 滚动字幕到当前位置
+          this.scrollToCurrentSubtitle();
+        }
+      } else {
+        // 如果没有找到当前字幕，保持显示上一句字幕
+        // 不清除高亮，直到找到下一句字幕
       }
     },
     
