@@ -2,38 +2,25 @@
   <view class="app-container">
     <!-- 标题栏 -->
     <view class="header">
-      <view class="header-icon">▶️</view>
       <text class="header-title">美剧学习播放器</text>
       <text class="header-subtitle">支持SRT/VTT格式 | 点击字幕跳转 | A-B片段循环</text>
     </view>
     
     <!-- 视频文件上传区域 -->
-    <view class="upload-card">
+    <view class="upload-card" @click="chooseVideoFile">
       <view class="upload-label">
-        <text class="upload-icon">📹</text>
+        <image class="upload-icon" src="/static/上传视频.svg" mode="aspectFit"></image>
         <text class="upload-title">视频文件</text>
-      </view>
-      <view class="upload-area" @click="chooseVideoFile">
-        <view class="upload-content">
-          <text class="upload-icon-large">☁️</text>
-          <text class="upload-text">点击或拖拽视频文件到此处</text>
-          <text class="upload-hint">支持 MP4, MOV 等格式</text>
-        </view>
+        <text class="upload-format">支持 MP4, MOV 等格式</text>
       </view>
     </view>
     
     <!-- 字幕文件上传区域 -->
-    <view class="upload-card">
+    <view class="upload-card" @click="chooseSubtitleFile">
       <view class="upload-label">
-        <text class="upload-icon">📄</text>
+        <image class="upload-icon" src="/static/上传文件.svg" mode="aspectFit"></image>
         <text class="upload-title">字幕文件</text>
-      </view>
-      <view class="upload-area" @click="chooseSubtitleFile">
-        <view class="upload-content">
-          <text class="upload-icon-large">📋</text>
-          <text class="upload-text">点击或拖拽字幕文件到此处</text>
-          <text class="upload-hint">支持 SRT, VTT 格式</text>
-        </view>
+        <text class="upload-format">支持 SRT, VTT 格式</text>
       </view>
     </view>
     
@@ -1816,26 +1803,23 @@ export default {
 /* 标题栏样式 */
 .header {
   text-align: center;
-  margin-bottom: 40rpx;
+  margin-bottom: 20rpx;
   padding: 30rpx 0;
 }
 
-.header-icon {
-  font-size: 48rpx;
-  margin-bottom: 10rpx;
-}
+
 
 .header-title {
   display: block;
-  font-size: 40rpx;
+  font-size: 32rpx;
   font-weight: bold;
   color: #63b3ed;
-  margin-bottom: 10rpx;
+  margin-bottom: 5rpx;
 }
 
 .header-subtitle {
   display: block;
-  font-size: 24rpx;
+  font-size: 20rpx;
   color: #a0aec0;
 }
 
@@ -1844,19 +1828,29 @@ export default {
   background-color: rgba(255, 255, 255, 0.05);
   border: 1rpx solid rgba(255, 255, 255, 0.1);
   border-radius: 12rpx;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
+  padding: 15rpx;
+  margin-bottom: 15rpx;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-card:hover {
+  border-color: #63b3ed;
+  background-color: rgba(99, 179, 237, 0.05);
 }
 
 .upload-label {
   display: flex;
   align-items: center;
-  margin-bottom: 15rpx;
+  margin-bottom: 0;
+  gap: 10rpx;
+  flex-wrap: wrap;
 }
 
 .upload-icon {
-  font-size: 28rpx;
-  margin-right: 10rpx;
+  width: 36rpx;
+  height: 36rpx;
+  vertical-align: middle;
 }
 
 .upload-title {
@@ -1864,41 +1858,19 @@ export default {
   color: #e2e8f0;
 }
 
-/* 上传区域样式 */
-.upload-area {
-  border: 2rpx dashed rgba(255, 255, 255, 0.2);
-  border-radius: 8rpx;
-  padding: 40rpx;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.upload-area:hover {
-  border-color: #63b3ed;
-  background-color: rgba(99, 179, 237, 0.05);
-}
-
-.upload-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.upload-icon-large {
-  font-size: 60rpx;
-  margin-bottom: 15rpx;
+.upload-format {
+  font-size: 20rpx;
+  color: #718096;
+  margin-left: 40rpx;
+  white-space: nowrap;
 }
 
 .upload-text {
-  font-size: 26rpx;
-  color: #e2e8f0;
-  margin-bottom: 10rpx;
+  display: none;
 }
 
 .upload-hint {
-  font-size: 22rpx;
-  color: #718096;
+  display: none;
 }
 
 /* 视频区域样式 */
@@ -1946,31 +1918,31 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15rpx 20rpx;
+  padding: 10rpx 15rpx;
   border-top: 1rpx solid rgba(255, 255, 255, 0.1);
 }
 
 .time-display {
-  font-size: 24rpx;
+  font-size: 20rpx;
   color: #a0aec0;
   font-family: monospace;
 }
 
 .control-buttons {
   display: flex;
-  gap: 10rpx;
+  gap: 8rpx;
 }
 
 .control-btn {
   display: flex;
   align-items: center;
-  gap: 5rpx;
-  padding: 10rpx 20rpx;
+  gap: 4rpx;
+  padding: 8rpx 16rpx;
   background-color: rgba(255, 255, 255, 0.1);
   border: none;
-  border-radius: 6rpx;
+  border-radius: 4rpx;
   color: #e2e8f0;
-  font-size: 22rpx;
+  font-size: 18rpx;
 }
 
 .control-btn:hover {
@@ -1978,7 +1950,7 @@ export default {
 }
 
 .btn-icon {
-  font-size: 24rpx;
+  font-size: 20rpx;
 }
 
 /* A-B循环区域样式 */
@@ -1986,28 +1958,28 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15rpx 20rpx;
+  padding: 10rpx 15rpx;
   border-top: 1rpx solid rgba(255, 255, 255, 0.1);
   background-color: rgba(255, 255, 255, 0.02);
 }
 
 .ab-status {
-  font-size: 22rpx;
+  font-size: 18rpx;
   color: #718096;
 }
 
 .ab-buttons {
   display: flex;
-  gap: 10rpx;
+  gap: 8rpx;
 }
 
 .ab-btn {
-  padding: 8rpx 16rpx;
+  padding: 6rpx 12rpx;
   background-color: rgba(255, 255, 255, 0.1);
   border: 1rpx solid rgba(255, 255, 255, 0.2);
   border-radius: 4rpx;
   color: #e2e8f0;
-  font-size: 20rpx;
+  font-size: 16rpx;
 }
 
 .ab-btn.active {
@@ -2016,7 +1988,7 @@ export default {
 }
 
 .clear-btn {
-  padding: 8rpx 12rpx;
+  padding: 6rpx 10rpx;
 }
 
 /* 字幕区域样式 */
@@ -2025,34 +1997,34 @@ export default {
   border: 1rpx solid rgba(255, 255, 255, 0.1);
   border-radius: 12rpx;
   overflow: hidden;
+  margin-top: 15rpx;
 }
 
 .subtitle-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20rpx;
+  padding: 15rpx;
   border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
 }
 
 .subtitle-title {
-  font-size: 28rpx;
+  font-size: 24rpx;
   font-weight: bold;
   color: #e2e8f0;
 }
 
 .subtitle-count {
-  font-size: 22rpx;
+  font-size: 18rpx;
   color: #718096;
   background-color: rgba(255, 255, 255, 0.1);
-  padding: 4rpx 12rpx;
+  padding: 3rpx 10rpx;
   border-radius: 4rpx;
 }
 
 .subtitle-list {
   max-height: 500rpx;
   overflow-y: auto;
-  padding: 10rpx;
 }
 
 /* 空字幕提示样式 */
@@ -2061,7 +2033,7 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80rpx 0;
+  padding: 50rpx 0;
   color: #4a5568;
 }
 

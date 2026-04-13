@@ -33,18 +33,7 @@
       <text>© 2026 美剧学习播放器</text>
     </view>
     
-    <!-- uni-app广告组件 -->
-    <view class="ad-section">
-      <view class="ad-card">
-        <ad 
-          unit-id="adunit-xxxxxxxxxxxx"
-          ad-type="banner"
-          :ad-intervals="30"
-          @load="onAdLoad"
-          @error="onAdError"
-        ></ad>
-      </view>
-    </view>
+
   </view>
 </template>
 
@@ -75,7 +64,7 @@ export default {
      */
     getAppVersion() {
       // 直接使用manifest.json中的版本号
-      this.appVersion = '1.0.2';
+      this.appVersion = '1.0.4';
     },
     
     /**
@@ -157,19 +146,7 @@ export default {
       });
     },
     
-    /**
-     * 广告加载成功
-     */
-    onAdLoad() {
-      console.log('广告加载成功');
-    },
-    
-    /**
-     * 广告加载失败
-     */
-    onAdError(e) {
-      console.error('广告加载失败:', e);
-    }
+
   }
 }
 </script>
@@ -269,16 +246,5 @@ export default {
   font-size: 22rpx;
 }
 
-/* 广告区域样式 */
-.ad-section {
-  margin-top: 40rpx;
-  margin-bottom: 40rpx;
-}
 
-.ad-card {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1rpx solid rgba(255, 255, 255, 0.1);
-  border-radius: 12rpx;
-  padding: 20rpx;
-}
 </style>
