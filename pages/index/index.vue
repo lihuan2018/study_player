@@ -1115,24 +1115,37 @@ export default {
     },
     
     createAndTriggerFileInput() {
+      // 创建一个更兼容iPhone的文件输入元素
       const input = document.createElement('input');
       input.type = 'file';
-      input.accept = '.vtt,.srt,.ass,.ssa,text/vtt,text/srt,text/plain';
-      input.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;z-index:-1;';
+      // 移除accept属性，以提高在iPhone Safari上的兼容性
+      // 我们将在handleSelectedFile方法中进行文件类型验证
+      // 确保input元素不可见且不影响布局
+      input.style.cssText = 'position:fixed;top:-100px;left:-100px;width:1px;height:1px;opacity:0;z-index:-1;';
       
       input.onchange = (e) => {
         const file = e.target.files[0];
         if (file) {
+          console.log('选择的文件:', file);
           this.handleSelectedFile(file);
+        } else {
+          console.log('未选择文件');
         }
         // 清理
-        if (input.parentNode) {
-          input.parentNode.removeChild(input);
-        }
+        setTimeout(() => {
+          if (input.parentNode) {
+            input.parentNode.removeChild(input);
+          }
+        }, 100);
       };
       
+      // 添加到文档
       document.body.appendChild(input);
-      input.click();
+      
+      // 直接触发点击事件
+      setTimeout(() => {
+        input.click();
+      }, 100);
     },
     
     handleSelectedFile(file) {
