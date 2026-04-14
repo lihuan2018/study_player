@@ -206,8 +206,16 @@ export default {
         this.videoContext = this.$refs.domVideoPlayer;
         console.log('获取视频上下文:', this.videoContext);
       } else {
-        console.log('视频组件未找到（可能未渲染）');
-        this.videoContext = null;
+        // 组件未渲染完成，延迟重试
+        setTimeout(() => {
+          if (this.$refs.domVideoPlayer) {
+            this.videoContext = this.$refs.domVideoPlayer;
+            console.log('延迟获取视频上下文:', this.videoContext);
+          } else {
+            // 静默失败，不再输出警告
+            this.videoContext = null;
+          }
+        }, 100);
       }
     },
     
@@ -1031,29 +1039,25 @@ export default {
      * 选择字幕文件
      */
     chooseSubtitleFile() {
-      // 检查是否在H5环境且存在document对象
       if (typeof document !== 'undefined') {
-        // 在H5端，使用input[type=file]来选择文件
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.srt,.vtt,.ass,.ssa';
-        input.onchange = (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            this.subtitleFileName = file.name;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              const content = event.target.result;
-              this.parseSubtitles(content);
-              uni.showToast({ title: '字幕解析成功', icon: 'success' });
-            };
-            reader.onerror = () => {
-              uni.showToast({ title: '字幕读取失败', icon: 'none' });
-            };
-            reader.readAsText(file, 'utf-8');
-          }
-        };
-        input.click();
+        // 检测是否为iPhone
+        const isIPhone = /iPhone|iPod/.test(navigator.userAgent);
+        
+        if (isIPhone) {
+          // iPhone特殊处理：先显示提示
+          uni.showModal({
+            title: '提示',
+            content: '请选择字幕文件(.vtt, .srt, .ass, .ssa)',
+            showCancel: false,
+            confirmText: '确定',
+            success: () => {
+              this.createAndTriggerFileInput();
+            }
+          });
+        } else {
+          // 非iPhone设备直接处理
+          this.createAndTriggerFileInput();
+        }
       } else {
         // 检查是否是Android平台
         const systemInfo = uni.getSystemInfoSync();
@@ -1108,6 +1112,62 @@ export default {
           uni.showToast({ title: '当前环境不支持文件选择', icon: 'none' });
         }
       }
+    },
+    
+    createAndTriggerFileInput() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.vtt,.srt,.ass,.ssa,text/vtt,text/srt,text/plain';
+      input.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;z-index:-1;';
+      
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          this.handleSelectedFile(file);
+        }
+        // 清理
+        if (input.parentNode) {
+          input.parentNode.removeChild(input);
+        }
+      };
+      
+      document.body.appendChild(input);
+      input.click();
+    },
+    
+    handleSelectedFile(file) {
+      const fileName = file.name.toLowerCase();
+      const validExtensions = ['.vtt', '.srt', '.ass', '.ssa'];
+      const hasValidExtension = validExtensions.some(ext => fileName.endsWith(ext));
+      
+      if (!hasValidExtension) {
+        uni.showToast({
+          title: '请选择有效的字幕文件',
+          icon: 'none'
+        });
+        return;
+      }
+      
+      this.subtitleFileName = file.name;
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target.result;
+        this.parseSubtitles(content);
+        uni.showToast({
+          title: `字幕加载成功`,
+          icon: 'success'
+        });
+      };
+      
+      reader.onerror = () => {
+        uni.showToast({
+          title: '字幕读取失败',
+          icon: 'none'
+        });
+      };
+      
+      reader.readAsText(file, 'UTF-8');
     },
     
 
@@ -1697,7 +1757,7 @@ export default {
      * 更新视频总时长，并标记视频已准备好进行跳转
      */
     onVideoLoaded(e) {
-      console.log('--- onVideoLoaded 事件被触发 ---', e);
+      //console.log('--- onVideoLoaded 事件被触发 ---', e);
       if (e && typeof e === 'object') {
         if (e.detail && e.detail.duration) {
           this.durationSec = e.detail.duration;

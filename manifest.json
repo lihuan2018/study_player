@@ -80,7 +80,7 @@
             }
         },
         "router" : {
-            "mode" : "history",
+            "mode" : "hash",
             "base" : "/study_player/"
         }
     }
